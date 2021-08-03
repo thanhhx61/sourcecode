@@ -1,0 +1,127 @@
+﻿@{
+    ViewBag.Title = "Sửa sản phẩm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var lstCategory = ViewBag.lstCategory as List<OnlineShop.Models.EF.Category>;
+    var product = ViewBag.product as OnlineShop.Models.EF.Product;
+}
+
+<div class="content">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="title">Cập nhật sản phẩm</h5>
+                </div>
+                <div class="card-body">
+                    @using (Html.BeginForm("Edit", "Product", FormMethod.Post, new { id = "frmValidate", enctype = "multipart/form-data" }))
+                    {
+                        <div class="row">
+                            <div class="col-md-6 pr-md-1">
+                                <div class="form-group">
+                                    <label>Tên sản phẩm</label>
+                                    <input type="text" class="form-control" name="Product_Name" value="@product.Product_Name" placeholder="Nhập tên sản phẩm">
+                                </div>
+                            </div>
+                            <div class="col-md-6 pr-md-1">
+                                <div class="form-group">
+                                    <label>Thuộc danh mục</label>
+                                    <select class="form-control" name="Category_ID">
+                                        <option value="">Chọn danh mục sản phẩm</option>
+                                        @foreach (var item in lstCategory)
+                                        {
+                                            <option value="@item.ID" @(product.Category_ID == item.ID ? "selected" : "")>@item.Name</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 pr-md-1">
+                                <div class="form-group">
+                                    <label>Giá gốc</label>
+                                    <input type="number" min="5000" name="Promotion_Price" value="@product.Promotion_Price" class="form-control" placeholder="Nhập giá gốc">
+                                </div>
+                            </div>
+                            <div class="col-md-6 pl-md-1">
+                                <div class="form-group">
+                                    <label>Giá khuyến mãi</label>
+                                    <input type="number" min="5000" name="Price" value="@product.Price" class="form-control" placeholder="Nhập giá khuyến mãi">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 pr-md-1">
+                                <div class="form-group">
+                                    <label style="padding-right: 225px;">Hình ảnh sản phẩm</label>
+                                    <label for="file-upload" class="custom-file-upload">
+                                        <i class="fa fa-upload"></i> @product.Image
+                                    </label>
+                                    <input id="file-upload" name="Image" type="file" style="display:none;" accept="image/*">
+                                </div>
+                            </div>
+                            <div class="col-md-6 px-md-1">
+                                <div class="form-group">
+                                    <label>Số lượng</label>
+                                    <input type="number" min="1" name="Quantity" value="@product.Quantity" class="form-control" placeholder="Nhập số lượng sản phẩm">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 pr-md-1">
+                            </div>
+                            <div class="col-md-4 px-md-1">
+                                <button type="submit" class="btn btn-fill btn-primary">Cập nhật</button>
+                            </div>
+                            <div class="col-md-4 pr-md-1">
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="card-footer">
+                    <a href="/Product" class="btn btn-fill btn-default">Quay lại</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section jsAdmin{
+
+    <script>
+        $(document).ready(function () {
+
+            $('#file-upload').change(function() {
+              var i = $(this).prev('label').clone();
+              var file = '<i class="fa fa-upload"></i>' + $('#file-upload')[0].files[0].name;
+              $(this).prev('label').empty();
+              $(this).prev('label').append(file);
+            });
+
+            // add the rule here
+            $.validator.addMethod("select_validate", function (value, element, arg) {
+                return arg !== value;
+            }, "Value must not equal arg.");
+            //Khi bàn phím được nhấn và thả ra thì sẽ chạy phương thức này
+            $("#frmValidate").validate({
+                rules: {
+                    Product_Name: "required",
+                    Promotion_Price: "required",
+                    //Price: "required",
+                    Quantity: "required",
+                    Category_ID: { select_validate: "" },
+                    Image: { select_validate: "" }
+                },
+                messages: {
+                    Product_Name: "Vui lòng nhập tên sản phẩm",
+                    Promotion_Price: "Vui lòng nhập giá gốc",
+                    //Price: "Vui lòng nhập giá khuyến mãi",
+                    Quantity: "Vui lòng số lượng sản phẩm",
+                    Category_ID:{ select_validate: "Bạn chưa chọn danh mục sản phẩm!" },
+                    Image: "Vui lòng chọn hình ảnh"
+                }
+            });
+        });
+    </script>
+
+}
+
